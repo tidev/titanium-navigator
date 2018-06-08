@@ -1,6 +1,5 @@
 import { SignalDispatcher } from 'strongly-typed-events';
 
-import { ElementNode, TitaniumElement } from 'titanium-vdom';
 import { NavigationOptions } from '../NavigationOptions';
 import { NavigatorInterface } from './NavigatorInterface';
 

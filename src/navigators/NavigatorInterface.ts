@@ -3,7 +3,15 @@ import { SignalDispatcher } from 'strongly-typed-events';
 import { NavigationOptions } from '../NavigationOptions';
 
 export interface NavigatorContructor {
-    new(view: Titanium.UI.View): NavigatorInterface;
+    supportedRootView: string | null;
+    supportedViews: Set<string>;
+    new(view: Titanium.Proxy, ...args: any[]): NavigatorInterface;
+    canHandle(view: Titanium.Proxy): boolean;
+}
+
+export interface NavigatorProvider {
+    class: NavigatorContructor;
+    deps: any[];
 }
 
 export interface NavigatorInterface {
@@ -16,4 +24,8 @@ export interface NavigatorInterface {
     open(view: Titanium.Proxy, options: NavigationOptions): void;
     canGoBack(): boolean;
     back(): void;
+}
+
+export function createNavigator(ctor: NavigatorContructor, view: Titanium.Proxy, ...args: any[]): NavigatorInterface {
+    return new ctor(view, ...args);
 }

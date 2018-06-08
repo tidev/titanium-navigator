@@ -36,10 +36,10 @@ export class WindowNavigator extends AbstractNavigator {
      * 
      * @param window Titanium.UI.Window that will be used as the root window.
      */
-    constructor(window: Titanium.UI.Window) {
+    constructor(window: Titanium.Proxy) {
         super(window);
 
-        this.rootWindow = window;
+        this.rootWindow = window as Titanium.UI.Window;
         this.transitionHandler = new NavigationTransitionHandler();
     }
 
@@ -66,7 +66,7 @@ export class WindowNavigator extends AbstractNavigator {
         Ti.API.debug(`options: ${JSON.stringify(options)}`);
         Ti.API.debug(`openWindowOptions: ${JSON.stringify(openWindowOptions)}`);
 
-        if (options.transition.type !== TransitionType.None) {
+        if (options.transition && options.transition.type !== TransitionType.None) {
             const currentView = this.windows[this.windows.length - 1];
             this.transitionHandler.prepareTransition(view, currentView, options.transition, openWindowOptions);
             Ti.API.debug(`openWindowOptions: ${JSON.stringify(openWindowOptions)}`);

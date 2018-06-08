@@ -1,4 +1,4 @@
-import { NavigationTransition } from '../animation';
+import { NavigationTransition } from './transition';
 
 export interface NavigationOptions {
     clearHistory?: boolean;

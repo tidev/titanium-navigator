@@ -1,5 +1,5 @@
+import { AbstractTransition } from '../AbstractTransition';
 import { NavigationTransition } from '../NavigationTransition';
-import { AbstractTransition } from './AbstractTransition';
 
 export class SlideLeftTransition extends AbstractTransition {
     public name: string = 'slideLeft';

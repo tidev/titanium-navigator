@@ -28,10 +28,10 @@ export class TabGroupNavigator extends AbstractNavigator {
      */
     private windowStacks: Map<Titanium.UI.Tab, Titanium.UI.Window[]> = new Map();
 
-    constructor(tabGroup: Titanium.UI.TabGroup) {
+    constructor(tabGroup: Titanium.Proxy) {
         super(tabGroup);
 
-        this.tabGroup = tabGroup;
+        this.tabGroup = tabGroup as Titanium.UI.TabGroup;
     }
 
     public initialize(): void {

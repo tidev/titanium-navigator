@@ -28,10 +28,10 @@ export class NavigationWindowNavigator extends AbstractNavigator {
      * 
      * @param navigationWindow Titanium.UI.iOS.NavigationWindow that will be used as the root window.
      */
-    constructor(navigationWindow: Titanium.UI.iOS.NavigationWindow) {
+    constructor(navigationWindow: Titanium.Proxy) {
         super(navigationWindow);
 
-        this.rootWindow = navigationWindow;
+        this.rootWindow = navigationWindow as Titanium.UI.iOS.NavigationWindow;
     }
 
     public openRootWindow(): void {

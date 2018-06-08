@@ -1,18 +1,15 @@
-import { Subscription } from 'rxjs';
-
-import { ElementNode, InvisibleElement, TitaniumElement } from 'titanium-vdom';
 import { ComponentAdapterInterface } from './adapters/ComponentAdapterInterface';
 import { NavigationOptions } from './NavigationOptions';
-import { AbstractNavigator } from './navigators/AbstractNavigator';
-import { NavigationWindowNavigator } from './navigators/NavigationWindowNavigator';
-import { NavigatorContructor, NavigatorInterface } from './navigators/NavigatorInterface';
-import { loadNavigators } from './navigators/navigators';
-import { TabGroupNavigator } from './navigators/TabGroupNavigator';
-import { WindowNavigator } from './navigators/WindowNavigator';
+import { createNavigator, NavigatorInterface, NavigatorProvider } from './navigators/NavigatorInterface';
 
 export interface OpenableViewInterface extends Titanium.Proxy {
     open(...args: any[]): void;
     close(...args: any[]): void;
+}
+
+export interface NavigationManagerConfiguration {
+    componentAdapter: ComponentAdapterInterface;
+    navigators: Set<NavigatorProvider>;
 }
 
 /**
@@ -29,11 +26,10 @@ export class NavigationManager {
     public currentNavigationOptions: NavigationOptions;
 
     /**
-     * List of available navigators.
+     * A set of views that can automatically be openend using one of the available
+     * navigators.
      */
-    private availableNavigators: any[];
-
-    private _openableViews: Set<string> = new Set();
+    public readonly openableViews: Set<string> = new Set();
 
     /**
      * Stack of navigators.
@@ -51,6 +47,11 @@ export class NavigationManager {
     private componentAdapter: ComponentAdapterInterface;
 
     /**
+     * 
+     */
+    private navigatorProviders: Set<NavigatorProvider> = new Set();
+
+    /**
      * Internal Flag indicating that a native back navigation is in progress.
      */
     private _nativeBackNavigation: boolean = false;
@@ -63,28 +64,10 @@ export class NavigationManager {
      */
     private _locationBackNavigation: boolean = false;
 
-    constructor(componentAdapter: ComponentAdapterInterface) {
+    constructor(config: NavigationManagerConfiguration) {
         this.currentNavigationOptions = this.defaultNavigationOptions;
-        this.componentAdapter = componentAdapter;
-        this.availableNavigators = loadNavigators();
-    }
-
-    /**
-     * A set of views that can automatically be openend using one of the available
-     * navigators.
-     * 
-     * Generated automatically on first access from the list of available
-     * navigators using their supportedViews property.
-     */
-    private get openableViews(): Set<string> {
-        if (!this._openableViews) {
-            this._openableViews = new Set();
-            this.availableNavigators.forEach((navigatorClass: typeof AbstractNavigator) => {
-                navigatorClass.supportedViews.forEach(viewApiName => this._openableViews.add(viewApiName));
-            });
-        }
-
-        return this._openableViews;
+        this.componentAdapter = config.componentAdapter;
+        config.navigators.forEach(provider => this.registerNavigatorProvider(provider));
     }
 
     /**
@@ -114,6 +97,11 @@ export class NavigationManager {
      */
     set locationBackNavigation(locationBackNavigation: boolean) {
         this._locationBackNavigation = locationBackNavigation;
+    }
+
+    public registerNavigatorProvider(provider: NavigatorProvider): void {
+        this.navigatorProviders.add(provider);
+        provider.class.supportedViews.forEach(viewApiName => this.openableViews.add(viewApiName));
     }
 
     /**
@@ -196,13 +184,10 @@ export class NavigationManager {
 
         const titaniumView = this.componentAdapter.findTopLevelOpenableView(component);
         let navigator: NavigatorInterface | undefined;
-        for (const candidateNavigatorClass of this.availableNavigators) {
-            if ((candidateNavigatorClass as typeof AbstractNavigator).canHandle(titaniumView)) {
-                Ti.API.debug(`Creating navigator ${candidateNavigatorClass.name} for component ${componentName}.`);
-                navigator = new candidateNavigatorClass(titaniumView);
-                if (navigator) {
-                    navigator.initialize();
-                }
+        for (const candidateNavigatorProvider of this.navigatorProviders) {
+            if (candidateNavigatorProvider.class.canHandle(titaniumView)) {
+                Ti.API.debug(`Creating navigator ${candidateNavigatorProvider.class.name} for component ${componentName}.`);
+                navigator = createNavigator(candidateNavigatorProvider.class, titaniumView, candidateNavigatorProvider.deps);
                 break;
             }
         }
