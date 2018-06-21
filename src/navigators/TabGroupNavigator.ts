@@ -1,3 +1,4 @@
+import { RouterStateAdapterInterface } from '../adapters';
 import { NavigationOptions } from '../NavigationOptions';
 import { deviceRuns } from '../utility';
 import { AbstractNavigator } from './AbstractNavigator';
@@ -28,10 +29,16 @@ export class TabGroupNavigator extends AbstractNavigator {
      */
     private windowStacks: Map<Titanium.UI.Tab, Titanium.UI.Window[]> = new Map();
 
-    constructor(tabGroup: Titanium.Proxy) {
+    /**
+     * 
+     */
+    private routerStateAdapter: RouterStateAdapterInterface;
+
+    constructor(tabGroup: Titanium.Proxy, createRouterStateAdapter: () => RouterStateAdapterInterface) {
         super(tabGroup);
 
         this.tabGroup = tabGroup as Titanium.UI.TabGroup;
+        this.routerStateAdapter = createRouterStateAdapter();
     }
 
     public initialize(): void {
@@ -40,8 +47,7 @@ export class TabGroupNavigator extends AbstractNavigator {
                 return;
             }
 
-            // TODO: Replace with platform independent implemention
-            // this.routerStateManager.applySnapshot(this.tabGroup.activeTab);
+            this.routerStateAdapter.applySnapshot(this.tabGroup.activeTab);
         });
     }
 
@@ -64,8 +70,7 @@ export class TabGroupNavigator extends AbstractNavigator {
         windowStack.push(view as any);
         this.tabGroup.activeTab.open(view as any);
 
-        // TODO: Make platform independent
-        // this.routerStateManager.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
     }
 
     public canGoBack(): boolean {
@@ -89,8 +94,7 @@ export class TabGroupNavigator extends AbstractNavigator {
             window.close();
         }
 
-        // TODO: Make platform independent
-        // this.routerStateManager.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
     }
 
     /**
@@ -105,10 +109,8 @@ export class TabGroupNavigator extends AbstractNavigator {
         const window = event.source as Titanium.UI.Window;
         window.removeEventListener('close', this.onWindowClose);
 
-        this.nativeNavigationSignalDispatcher.dispatch();
+        this.nativeNavigationSignal.dispatch();
 
-        // TODO: Make platform independent
-        // this.location.back();
-        // this.routerStateManager.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
     }
 }

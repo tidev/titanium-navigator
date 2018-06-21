@@ -1,4 +1,4 @@
 import { RouterStateAdapterInterface } from '../../adapters';
 import { NavigatorProvider } from '../NavigatorInterface';
 
-export function loadNavigatorProviders(stateAdapter: RouterStateAdapterInterface): NavigatorProvider[];
+export function loadCommonNavigatorProviders(stateAdapterFactory: () => RouterStateAdapterInterface): NavigatorProvider[];

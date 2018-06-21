@@ -71,8 +71,6 @@ export class NavigationWindowNavigator extends AbstractNavigator {
         const window = event.source as Titanium.UI.Window;
         window.removeEventListener('close', this.onWindowClose);
 
-        this.nativeNavigationSignalDispatcher.dispatch();
-
-        // TODO: Update framework's routing state
+        this.nativeNavigationSignal.dispatch();
     }
 }

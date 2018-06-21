@@ -3,8 +3,8 @@ import { NavigationWindowNavigator } from '../NavigationWindowNavigator';
 import { NavigatorProvider } from '../NavigatorInterface';
 import { loadCommonNavigatorProviders } from './common';
 
-export function loadNavigatorProviders(stateAdapter: RouterStateAdapterInterface): NavigatorProvider[] {
-    return loadCommonNavigatorProviders(stateAdapter).concat([
+export function loadNavigatorProviders(stateAdapterFactory: () => RouterStateAdapterInterface): NavigatorProvider[] {
+    return loadCommonNavigatorProviders(stateAdapterFactory).concat([
         { class: NavigationWindowNavigator, deps: [] }
     ]);
 }

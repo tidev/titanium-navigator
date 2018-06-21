@@ -1,7 +1,7 @@
-import { OpenableViewInterface } from '../NavigationManager';
+import { TitaniumElement } from 'titanium-vdom';
 
 export interface ComponentAdapterInterface {
     getComponentName(component: any): string;
-    findTopLevelOpenableView(component: any): OpenableViewInterface;
-    detachCcomponent(component: any): void;
+    getTopmostTitaniumElement<T extends Titanium.UI.View>(component: any): TitaniumElement<T>;
+    detachComponent(component: any): void;
 }

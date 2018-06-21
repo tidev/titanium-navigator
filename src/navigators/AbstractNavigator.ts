@@ -32,7 +32,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     /**
      * Event emitter for native navigation state changes.
      */
-    public nativeNavigationSignalDispatcher = new SignalDispatcher();
+    public nativeNavigationSignal = new SignalDispatcher();
 
     /**
      * Set of views after which this navigator needs to yield to another

@@ -15,7 +15,7 @@ export interface NavigatorProvider {
 }
 
 export interface NavigatorInterface {
-    nativeNavigationSignalDispatcher: SignalDispatcher;
+    nativeNavigationSignal: SignalDispatcher;
     initialize(): void;
     openRootWindow(): void;
     closeRootWindow(): void;

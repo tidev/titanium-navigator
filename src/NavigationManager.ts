@@ -1,15 +1,23 @@
+import { SignalDispatcher } from 'strongly-typed-events';
+
 import { ComponentAdapterInterface } from './adapters/ComponentAdapterInterface';
 import { NavigationOptions } from './NavigationOptions';
 import { createNavigator, NavigatorInterface, NavigatorProvider } from './navigators/NavigatorInterface';
 
+/**
+ * Marker interface to identify Titanium views can be opened and closed.
+ */
 export interface OpenableViewInterface extends Titanium.Proxy {
     open(...args: any[]): void;
     close(...args: any[]): void;
 }
 
+/**
+ * Configuration object for the navigation manager.
+ */
 export interface NavigationManagerConfiguration {
     componentAdapter: ComponentAdapterInterface;
-    navigators: Set<NavigatorProvider>;
+    navigatorProviders: Set<NavigatorProvider>;
 }
 
 /**
@@ -17,7 +25,10 @@ export interface NavigationManagerConfiguration {
  * handle opening and closing views inside the view hierarchy.
  */
 export class NavigationManager {
-
+    /**
+     * The default navigation options that will be applied to every navigation
+     * between two views.
+     */
     public defaultNavigationOptions = {};
 
     /**
@@ -42,14 +53,19 @@ export class NavigationManager {
     private activeNavigator: NavigatorInterface | null = null;
 
     /**
-     * 
+     * Adapter to interact with a component of the target framework.
      */
     private componentAdapter: ComponentAdapterInterface;
 
     /**
-     * 
+     * Set of providers for every registered navigator.
      */
     private navigatorProviders: Set<NavigatorProvider> = new Set();
+
+    /**
+     * Signal dispatcher for when a natively triggered navigation occured.
+     */
+    private nativeBackNavigationSignal = new SignalDispatcher();
 
     /**
      * Internal Flag indicating that a native back navigation is in progress.
@@ -67,7 +83,7 @@ export class NavigationManager {
     constructor(config: NavigationManagerConfiguration) {
         this.currentNavigationOptions = this.defaultNavigationOptions;
         this.componentAdapter = config.componentAdapter;
-        config.navigators.forEach(provider => this.registerNavigatorProvider(provider));
+        config.navigatorProviders.forEach(provider => this.registerNavigatorProvider(provider));
     }
 
     /**
@@ -85,7 +101,7 @@ export class NavigationManager {
     }
 
     /**
-     * Returns true if a back navigation triggered by {@link TitaniumPlatformLocation}
+     * Returns true if a back navigation triggered by a location change
      * is currently in progress.
      */
     get isLocationBackNavigation(): boolean {
@@ -97,6 +113,12 @@ export class NavigationManager {
      */
     set locationBackNavigation(locationBackNavigation: boolean) {
         this._locationBackNavigation = locationBackNavigation;
+    }
+
+    public initialize(config: NavigationManagerConfiguration) {
+        this.currentNavigationOptions = this.defaultNavigationOptions;
+        this.componentAdapter = config.componentAdapter;
+        config.navigatorProviders.forEach(provider => this.registerNavigatorProvider(provider));
     }
 
     public registerNavigatorProvider(provider: NavigatorProvider): void {
@@ -127,7 +149,7 @@ export class NavigationManager {
             throw new Error(`No active navigator available to handle navigation to ${componentName}`);
         }
 
-        const titaniumView = this.componentAdapter.findTopLevelOpenableView(component);
+        const titaniumView = this.findTopLevelOpenableView(component);
         if (!this.activeNavigator.canOpen(titaniumView)) {
             throw new Error(`Currently active navigator ${this.activeNavigator} cannot open a ${titaniumView.apiName}`);
         }
@@ -180,14 +202,15 @@ export class NavigationManager {
      */
     private createNavigator(component: any): NavigatorInterface {
         const componentName = this.componentAdapter.getComponentName(component);
-        this.componentAdapter.detachCcomponent(component);
+        this.componentAdapter.detachComponent(component);
 
-        const titaniumView = this.componentAdapter.findTopLevelOpenableView(component);
+        const titaniumView = this.findTopLevelOpenableView(component);
         let navigator: NavigatorInterface | undefined;
         for (const candidateNavigatorProvider of this.navigatorProviders) {
             if (candidateNavigatorProvider.class.canHandle(titaniumView)) {
                 Ti.API.debug(`Creating navigator ${candidateNavigatorProvider.class.name} for component ${componentName}.`);
                 navigator = createNavigator(candidateNavigatorProvider.class, titaniumView, candidateNavigatorProvider.deps);
+                navigator.initialize();
                 break;
             }
         }
@@ -206,12 +229,14 @@ export class NavigationManager {
      */
     private activateNavigator(navigator: NavigatorInterface): void {
         this.activeNavigator = navigator;
-        this.removeNativeNavigationSignalListener = this.activeNavigator.nativeNavigationSignalDispatcher.subscribe(() => {
+        this.removeNativeNavigationSignalListener = this.activeNavigator.nativeNavigationSignal.subscribe(() => {
             if (this.isNativeBackNavigation) {
                 throw new Error('Native back navigation is already in progress');
             }
 
             this._nativeBackNavigation = true;
+
+            this.nativeBackNavigationSignal.dispatch();
         });
 
         Ti.API.trace(`NavigationManager - new active navigator: ${this.activeNavigator}`);
@@ -246,6 +271,19 @@ export class NavigationManager {
         this.activateNavigator(this.navigators[this.navigators.length - 1]);
 
         return poppedNavigator;
+    }
+
+    private findTopLevelOpenableView(component: any) {
+        const componentName = this.componentAdapter.getComponentName(component);
+        const candidateElement = this.componentAdapter.getTopmostTitaniumElement(component);
+        if (candidateElement === null) {
+            throw new Error(`Component ${componentName} has no child elements to open, cannot use it for window navigation.`);
+        }
+        if (!this.isOpenableView(candidateElement.titaniumView)) {
+            throw new Error(`Could not find an openable Titanium view as the top-level element in component ${componentName}. Found ${candidateElement} but expected one of ${Array.from(this.openableViews).join(', ')}.`);
+        }
+
+        return candidateElement.titaniumView;
     }
 
     /**

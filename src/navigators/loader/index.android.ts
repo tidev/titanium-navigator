@@ -2,8 +2,8 @@ import { RouterStateAdapterInterface } from '../../adapters';
 import { NavigatorProvider } from '../NavigatorInterface';
 import { loadCommonNavigatorProviders } from './common';
 
-export function loadNavigatorProviders(stateAdapter: RouterStateAdapterInterface): NavigatorProvider[] {
-    return loadCommonNavigatorProviders(stateAdapter).concat([
+export function loadNavigatorProviders(stateAdapterFactory: () => RouterStateAdapterInterface): NavigatorProvider[] {
+    return loadCommonNavigatorProviders(stateAdapterFactory).concat([
         // TODO: Add DrawerLayoutNavigator
     ]);
 }
