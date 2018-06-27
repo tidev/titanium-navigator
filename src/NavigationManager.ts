@@ -209,7 +209,7 @@ export class NavigationManager {
         for (const candidateNavigatorProvider of this.navigatorProviders) {
             if (candidateNavigatorProvider.class.canHandle(titaniumView)) {
                 Ti.API.debug(`Creating navigator ${candidateNavigatorProvider.class.name} for component ${componentName}.`);
-                navigator = createNavigator(candidateNavigatorProvider.class, titaniumView, candidateNavigatorProvider.deps);
+                navigator = createNavigator(candidateNavigatorProvider.class, titaniumView, ...candidateNavigatorProvider.deps);
                 navigator.initialize();
                 break;
             }
