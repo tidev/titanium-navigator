@@ -4,7 +4,7 @@ import { AbstractNavigator } from './AbstractNavigator';
 
 /**
  * Navigator implementation for Ti.UI.Window.
- * 
+ *
  * This navigator can open other windows, tab groups and iOS navigation windows.
  * Opened views will be stored in a stack to support back navigation.
  */
@@ -33,7 +33,7 @@ export class WindowNavigator extends AbstractNavigator {
 
     /**
      * Constructs a new window navigator.
-     * 
+     *
      * @param window Titanium.UI.Window that will be used as the root window.
      */
     constructor(window: Titanium.Proxy) {
@@ -92,7 +92,7 @@ export class WindowNavigator extends AbstractNavigator {
 
     /**
      * Custom type guard to check if a view is a Ti.UI.Window.
-     * 
+     *
      * @param view View to check
      */
     private isWindow(view: Titanium.Proxy): view is Titanium.UI.Window {
@@ -101,7 +101,7 @@ export class WindowNavigator extends AbstractNavigator {
 
     /**
      * Custom type guard to check if a view is a Ti.UI.TabGroup.
-     * 
+     *
      * @param view View to check
      */
     private isTabGroup(view: Titanium.Proxy): view is Titanium.UI.TabGroup {
@@ -110,7 +110,7 @@ export class WindowNavigator extends AbstractNavigator {
 
     /**
      * Custom type guard to check if a view is a Ti.UI.iOS.NavigationWindow.
-     * 
+     *
      * @param view View to check
      */
     private isNavigationWindow(view: Titanium.Proxy): view is Titanium.UI.iOS.NavigationWindow {
