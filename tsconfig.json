@@ -7,11 +7,6 @@
       "es2015",
       "es2015.iterable"
     ],
-    "paths": {
-      "vdom/*": [
-        "src/*"
-      ]
-    },
     "outDir": "./dist",
     "declaration": true,
     "downlevelIteration": true,
