@@ -25,7 +25,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "strongly-typed-events": "^1.4.6",
-    "titanium-vdom": "^0.3.0"
+    "titanium-vdom": "^0.3.0",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/titanium": "^7.1.0",
