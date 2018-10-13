@@ -1,6 +1,6 @@
 {
   "name": "titanium-navigator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Enables Angular and Vue.js routing in Titanium",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -23,6 +23,14 @@
   ],
   "author": "Axway Appcelerator",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appcelerator/titanium-navigator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/appcelerator/titanium-navigator/issues"
+  },
+  "homepage": "https://github.com/appcelerator/titanium-navigator#readme",
   "dependencies": {
     "strongly-typed-events": "^1.4.6",
     "titanium-vdom": "^0.3.0",
