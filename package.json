@@ -37,7 +37,7 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/titanium": "^7.1.0",
+    "@types/titanium": "^8.0.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.10.0",
     "tslint-eslint-rules": "^5.3.1",
