@@ -1,6 +1,10 @@
 import { RouterStateAdapterInterface } from './RouterStateAdapterInterface';
 import { RouterStateSnapshotInterface } from './RouterStateSnapshotInterface';
 
+/**
+ * An adapter for saving and restoring router state snapshots when navigating
+ * inside tab groups.
+ */
 export abstract class AbstractRouterStateAdapter implements RouterStateAdapterInterface {
 
     /**
@@ -16,8 +20,8 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
 
     /**
      * Updates the current router state snpashot for the given tab.
-     * 
-     * @param tab Tab to associate the current router state snapshot with. 
+     *
+     * @param tab Tab to associate the current router state snapshot with.
      */
     public updateRouterStateSnapshot(tab: Titanium.UI.Tab): void {
         const snapshot = this.createSnapshot();
@@ -26,7 +30,7 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
 
     /**
      * Applies the router states from the stored snapshot of the given tab.
-     * 
+     *
      * @param tab Tab for which to look up and apply previously stored router states.
      */
     public applySnapshot(tab: Titanium.UI.Tab): void {
@@ -48,7 +52,7 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
 
     /**
      * Restores the snapshotted state back to the router.
-     * 
+     *
      * @param snapshot The snapshot to apply the state from
      */
     protected abstract restoreStateFromSnapshot(snapshot: RouterStateSnapshotInterface): void;
@@ -56,7 +60,7 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
     /**
      * Creates a new router state snapshot from the current location history and any other
      * relevant data needed to restore the state at a later time.
-     * 
+     *
      * @return The created snpashot of the current router states.
      */
     protected abstract createSnapshot(): RouterStateSnapshotInterface;

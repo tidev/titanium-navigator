@@ -4,7 +4,7 @@ import { TransitionInterface } from './TransitionInterface';
 export abstract class AbstractTransition implements TransitionInterface {
     public abstract name: string;
 
-    public defaultDuration: number = 350;
+    public defaultDuration = 350;
 
     constructor(protected openWindowOptions: openWindowParams) {
 

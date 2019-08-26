@@ -1,6 +1,6 @@
 import { SignalDispatcher } from 'strongly-typed-events';
 
-import { ComponentAdapterInterface } from './adapters/ComponentAdapterInterface';
+import { ComponentAdapterInterface } from './adapters/ComponentAdapterInterface';
 import { NavigationOptions } from './NavigationOptions';
 import { createNavigator, NavigatorInterface, NavigatorProvider } from './navigators/NavigatorInterface';
 
@@ -24,7 +24,7 @@ export interface NavigationManagerConfiguration {
  * Manages navigation inside the app by using different navigators which
  * handle opening and closing views inside the view hierarchy.
  */
-export class NavigationManager {
+export class NavigationManager {
     /**
      * The default navigation options that will be applied to every navigation
      * between two views.
@@ -70,15 +70,15 @@ export class NavigationManager {
     /**
      * Internal Flag indicating that a native back navigation is in progress.
      */
-    private _nativeBackNavigation: boolean = false;
+    private _nativeBackNavigation = false;
 
     /**
      * Internal flag indicating that a back navigation triggered by
      * {@link TitaniumPlatformLocation} is in progress.
-     * 
+     *
      * @TODO
      */
-    private _locationBackNavigation: boolean = false;
+    private _locationBackNavigation = false;
 
     constructor(config: NavigationManagerConfiguration) {
         this.currentNavigationOptions = this.defaultNavigationOptions;
@@ -115,12 +115,6 @@ export class NavigationManager {
         this._locationBackNavigation = locationBackNavigation;
     }
 
-    public initialize(config: NavigationManagerConfiguration) {
-        this.currentNavigationOptions = this.defaultNavigationOptions;
-        this.componentAdapter = config.componentAdapter;
-        config.navigatorProviders.forEach(provider => this.registerNavigatorProvider(provider));
-    }
-
     public registerNavigatorProvider(provider: NavigatorProvider): void {
         this.navigatorProviders.add(provider);
         provider.class.supportedViews.forEach(viewApiName => this.openableViews.add(viewApiName));
@@ -128,21 +122,21 @@ export class NavigationManager {
 
     /**
      * Creates the root navigator and opens its root window.
-     * 
-     * @param component 
+     *
+     * @param component
      */
-    public createAndOpenRootNavigator(component: any) {
+    public createAndOpenRootNavigator(component: any): void {
         const navigator = this.createNavigator(component);
         navigator.openRootWindow();
         this.pushNavigator(navigator);
     }
 
     /**
-     * Opens 
-     * 
-     * @param component 
+     * Opens
+     *
+     * @param component
      */
-    public open(component: any) {
+    public open(component: any): void {
         const componentName = this.componentAdapter.getComponentName(component);
 
         if (!this.activeNavigator) {
@@ -166,7 +160,7 @@ export class NavigationManager {
         // @todo Handle modals -> create new appropriate navigator
     }
 
-    public back() {
+    public back(): void {
         Ti.API.trace('NavigationManager.back()');
 
         if (!this.activeNavigator) {
@@ -186,19 +180,19 @@ export class NavigationManager {
         }
     }
 
-    public resetBackNavigationFlags() {
+    public resetBackNavigationFlags(): void {
         this.nativeBackNavigation = false;
         this.locationBackNavigation = false;
     }
 
     /**
      * Creates a new navigator instance for the given component.
-     * 
+     *
      * Removes the component from the DOM tree and searches for the first
-     * openable view element. Then it tries to find the appropriate 
+     * openable view element. Then it tries to find the appropriate
      * navigator for this view and creates it.
-     * 
-     * @param component 
+     *
+     * @param component
      */
     private createNavigator(component: any): NavigatorInterface {
         const componentName = this.componentAdapter.getComponentName(component);
@@ -224,7 +218,7 @@ export class NavigationManager {
 
     /**
      * Activates the passed navigator, subscribing to native navigation state events.
-     * 
+     *
      * @param navigator Navigator to activate
      */
     private activateNavigator(navigator: NavigatorInterface): void {
@@ -244,10 +238,10 @@ export class NavigationManager {
 
     /**
      * Pushes a new navigator on the stack and activates it.
-     * 
+     *
      * @param navigator Navigator to push on the stack
      */
-    private pushNavigator(navigator: NavigatorInterface) {
+    private pushNavigator(navigator: NavigatorInterface): void {
         Ti.API.trace('NavigationManager.pushNavigator');
 
         if (this.activeNavigator) {
@@ -273,7 +267,7 @@ export class NavigationManager {
         return poppedNavigator;
     }
 
-    private findTopLevelOpenableView(component: any) {
+    private findTopLevelOpenableView(component: any): OpenableViewInterface {
         const componentName = this.componentAdapter.getComponentName(component);
         const candidateElement = this.componentAdapter.getTopmostTitaniumElement(component);
         if (candidateElement === null) {
@@ -287,7 +281,7 @@ export class NavigationManager {
     }
 
     /**
-     * @param view 
+     * @param view
      */
     private isOpenableView(view: Titanium.Proxy): view is OpenableViewInterface {
         if (!view) {

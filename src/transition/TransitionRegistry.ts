@@ -17,11 +17,11 @@ export class TransitionRegistry {
         return this._instance;
     }
 
-    public registerTransitionClass(name: string, transitionClass: TransitionConstructor) {
+    public registerTransitionClass(name: string, transitionClass: TransitionConstructor): void {
         this.transitions.set(name, transitionClass);
     }
 
-    public hasTransition(name: string) {
+    public hasTransition(name: string): boolean {
         return this.transitions.has(name);
     }
 

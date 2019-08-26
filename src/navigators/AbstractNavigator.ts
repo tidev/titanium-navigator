@@ -6,12 +6,12 @@ import { NavigatorInterface } from './NavigatorInterface';
 /**
  * Abstract navigator serving as a base class for the individual navigator
  * implementations.
- * 
+ *
  * A navigator operates on a root view (defined by the supportedRootView
  * property) and can open a set of other views (defined by supportedViews)
  * on top of that root view. It has to keep track of those views so they can be
  * closed later when a back navigation is requested.
- * 
+ *
  * If a navigator opens a view that requires another navigator to take over
  * (defined by yieldNavigationViews), the {@link NavigationManager} will
  * stop using the currently active navigator and search for a new one to
@@ -50,7 +50,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     /**
      * Returns wether this navigator can handle navigation within the
      * specified view.
-     * 
+     *
      * @param view Root view on which this navigator should start navigation
      */
     public static canHandle(view: Titanium.Proxy): boolean {
@@ -60,7 +60,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     /**
      * Initializes this navigator.
      */
-    public initialize() {
+    public initialize(): void {
         // Does nothing by default, override in actual navigator implementation.
     }
 
@@ -77,7 +77,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     /**
      * Returns wether this navigator should yield his navigating responsibilities
      * to another navigator after opening the specified view.
-     * 
+     *
      * @param view Last view that was opened
      */
     public shouldYieldNavigating(view: Titanium.Proxy): boolean {
@@ -86,7 +86,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
 
     /**
      * Returns wether this navigator is able to open the given view.
-     * 
+     *
      * @param view Titanium view that should be opnened
      */
     public canOpen(view: Titanium.Proxy): boolean {
@@ -95,7 +95,7 @@ export abstract class AbstractNavigator implements NavigatorInterface {
 
     /**
      * Opens the given view using the navigation options.
-     * 
+     *
      * @param view View that should be opnened
      * @param options Navigation options to apply while opening the view
      */

@@ -5,17 +5,17 @@ import { AbstractNavigator } from './AbstractNavigator';
 
 /**
  * A navigator for handling navigation inside the Tabs of a TabGroup.
- * 
+ *
  * This navigator can only open Ti.UI.Window views. Opened views will be stored
- * in a stack. Each tab has its own window stack, to allow individual back 
+ * in a stack. Each tab has its own window stack, to allow individual back
  * navigation.
- * 
+ *
  * The router state will also be recorded per tab, so switching between tabs
  * always restores the appropiarte routing history.
  */
 export class TabGroupNavigator extends AbstractNavigator {
 
-    public static supportedRootView: string = 'Ti.UI.TabGroup';
+    public static supportedRootView = 'Ti.UI.TabGroup';
 
     public static supportedViews: Set<string> = new Set(['Ti.UI.Window']);
 
@@ -30,7 +30,7 @@ export class TabGroupNavigator extends AbstractNavigator {
     private windowStacks: Map<Titanium.UI.Tab, Titanium.UI.Window[]> = new Map();
 
     /**
-     * 
+     *
      */
     private routerStateAdapter: RouterStateAdapterInterface;
 
@@ -47,7 +47,7 @@ export class TabGroupNavigator extends AbstractNavigator {
                 return;
             }
 
-            this.routerStateAdapter.applySnapshot(this.tabGroup.activeTab);
+            this.routerStateAdapter.applySnapshot(this.tabGroup.activeTab as Titanium.UI.Tab);
         });
     }
 
@@ -61,26 +61,26 @@ export class TabGroupNavigator extends AbstractNavigator {
 
     public open(view: Titanium.Proxy, options: NavigationOptions): void {
         view.addEventListener('close', this.onWindowClose.bind(this));
-        const activeTab = this.tabGroup.activeTab;
+        const activeTab = this.tabGroup.activeTab as Titanium.UI.Tab;
         let windowStack = this.windowStacks.get(activeTab);
         if (!windowStack) {
             windowStack = [];
             this.windowStacks.set(activeTab, windowStack);
         }
         windowStack.push(view as any);
-        this.tabGroup.activeTab.open(view as any);
+        activeTab.open(view as any);
 
-        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(activeTab);
     }
 
     public canGoBack(): boolean {
-        const activeTab = this.tabGroup.activeTab;
+        const activeTab = this.tabGroup.activeTab as Titanium.UI.Tab;
         const windowStack = this.windowStacks.get(activeTab);
         return windowStack ? windowStack.length >= 1 : false;
     }
 
     public back(): void {
-        const activeTab = this.tabGroup.activeTab;
+        const activeTab = this.tabGroup.activeTab as Titanium.UI.Tab;
         const windowStack = this.windowStacks.get(activeTab);
         if (!windowStack || windowStack.length === 0) {
             throw new Error('The currently active tab doesn\'t have any more windows to close, cannot go back.');
@@ -89,21 +89,21 @@ export class TabGroupNavigator extends AbstractNavigator {
         const window = windowStack.pop() as Titanium.UI.Window;
         window.removeEventListener('close', this.onWindowClose);
         if (deviceRuns('ios')) {
-            this.tabGroup.activeTab.close(window);
+            activeTab.close(window);
         } else {
             window.close();
         }
 
-        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(activeTab);
     }
 
     /**
      * Event handler for the 'close' event of windows in a tab's window stack.
-     * 
+     *
      * This is used to track native navigation events and then update the internal
      * router states accordingly.
-     * 
-     * @param event 
+     *
+     * @param event
      */
     public onWindowClose(event: any): void {
         const window = event.source as Titanium.UI.Window;
@@ -111,6 +111,6 @@ export class TabGroupNavigator extends AbstractNavigator {
 
         this.nativeNavigationSignal.dispatch();
 
-        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab);
+        this.routerStateAdapter.updateRouterStateSnapshot(this.tabGroup.activeTab as Titanium.UI.Tab);
     }
 }

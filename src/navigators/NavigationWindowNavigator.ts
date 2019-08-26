@@ -42,17 +42,17 @@ export class NavigationWindowNavigator extends AbstractNavigator {
         this.rootWindow.close();
     }
 
-    public open(view: Titanium.Proxy, options: NavigationOptions) {
+    public open(view: Titanium.Proxy, options: NavigationOptions): void {
         view.addEventListener('close', this.onWindowClose.bind(this));
         this.windows.push(view);
         this.rootWindow.openWindow(view as Titanium.UI.Window, { animated: true });
     }
 
-    public canGoBack() {
+    public canGoBack(): boolean {
         return this.windows.length >= 1;
     }
 
-    public back() {
+    public back(): void {
         const window = this.windows.pop() as Titanium.UI.Window;
         window.removeEventListener('close', this.onWindowClose);
         this.rootWindow.closeWindow(window, null);
@@ -61,11 +61,11 @@ export class NavigationWindowNavigator extends AbstractNavigator {
     /**
      * Event handler for the "close" event of windows that were opened in the
      * root navigation window.
-     * 
+     *
      * Used to update Angular routing when a native back navigation was
      * triggered.
-     * 
-     * @param event 
+     *
+     * @param event
      */
     public onWindowClose(event: any): void {
         const window = event.source as Titanium.UI.Window;

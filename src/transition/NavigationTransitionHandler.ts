@@ -14,12 +14,12 @@ export class NavigationTransitionHandler {
 
     /**
      * Prepares a transition to a view that will be used when the view is opened.
-     * 
-     * @param view 
-     * @param transition 
+     *
+     * @param view
+     * @param transition
      * @param openWindowOptions
      */
-    public prepareTransition(futureView: any, currentView: any, transition: NavigationTransition, openWindowOptions: openWindowParams) {
+    public prepareTransition(futureView: any, currentView: any, transition: NavigationTransition, openWindowOptions: openWindowParams): void {
         if (!this.transitionRegistry.hasTransition(transition.type)) {
             throw new Error(`Invalid transition specified, ${transition.type} is not a known transition name.`);
         }

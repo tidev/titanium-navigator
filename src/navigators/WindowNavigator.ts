@@ -10,7 +10,7 @@ import { AbstractNavigator } from './AbstractNavigator';
  */
 export class WindowNavigator extends AbstractNavigator {
 
-    public static supportedRootView: string = 'Ti.UI.Window';
+    public static supportedRootView = 'Ti.UI.Window';
 
     public static supportedViews: Set<string> = new Set(['Ti.UI.Window', 'Ti.UI.TabGroup', 'Ti.UI.iOS.NavigationWindow']);
 
@@ -47,7 +47,7 @@ export class WindowNavigator extends AbstractNavigator {
         // TODO: Can this be removed?
     }
 
-    public openRootWindow() {
+    public openRootWindow(): void {
         this.windows.push(this.rootWindow);
         this.rootWindow.open();
     }
@@ -56,7 +56,7 @@ export class WindowNavigator extends AbstractNavigator {
         this.rootWindow.close();
     }
 
-    public open(view: Titanium.Proxy, options: NavigationOptions) {
+    public open(view: Titanium.Proxy, options: NavigationOptions): void {
         const openWindowOptions: openWindowParams = {};
 
         if (options.clearHistory) {
@@ -81,11 +81,11 @@ export class WindowNavigator extends AbstractNavigator {
         }
     }
 
-    public canGoBack() {
+    public canGoBack(): boolean {
         return this.windows.length > 1;
     }
 
-    public back() {
+    public back(): void {
         const window = this.windows.pop() as Titanium.UI.Window;
         window.close();
     }
