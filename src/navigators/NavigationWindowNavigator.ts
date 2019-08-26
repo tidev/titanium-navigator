@@ -2,21 +2,21 @@ import { NavigationOptions } from '../NavigationOptions';
 import { AbstractNavigator } from './AbstractNavigator';
 
 /**
- * Navigator implementation for Ti.UI.iOS.NavigationWindow
- * 
+ * Navigator implementation for Ti.UI.NavigationWindow
+ *
  * This navigator can only open Ti.UI.Window views. Opened views will be stored
  * in a stack and closed by the navigation window's closeWindow() method.
  */
 export class NavigationWindowNavigator extends AbstractNavigator {
 
-    public static supportedRootView: string = 'Ti.UI.iOS.NavigationWindow';
+    public static supportedRootView = 'Ti.UI.NavigationWindow';
 
     public static supportedViews: Set<string> = new Set(['Ti.UI.Window']);
 
     /**
      * Root window of this navigator which is a iOS NavigationWindow
      */
-    private rootWindow: Titanium.UI.iOS.NavigationWindow;
+    private rootWindow: Titanium.UI.NavigationWindow;
 
     /**
      * Stack of windows that are openend in the NavigationWindow
@@ -25,13 +25,13 @@ export class NavigationWindowNavigator extends AbstractNavigator {
 
     /**
      * Constructs a new NavigationWindow navigator
-     * 
-     * @param navigationWindow Titanium.UI.iOS.NavigationWindow that will be used as the root window.
+     *
+     * @param navigationWindow Titanium.UI.NavigationWindow that will be used as the root window.
      */
     constructor(navigationWindow: Titanium.Proxy) {
         super(navigationWindow);
 
-        this.rootWindow = navigationWindow as Titanium.UI.iOS.NavigationWindow;
+        this.rootWindow = navigationWindow as Titanium.UI.NavigationWindow;
     }
 
     public openRootWindow(): void {

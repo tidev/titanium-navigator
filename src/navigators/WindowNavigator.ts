@@ -5,16 +5,16 @@ import { AbstractNavigator } from './AbstractNavigator';
 /**
  * Navigator implementation for Ti.UI.Window.
  *
- * This navigator can open other windows, tab groups and iOS navigation windows.
+ * This navigator can open other windows, tab groups and navigation windows.
  * Opened views will be stored in a stack to support back navigation.
  */
 export class WindowNavigator extends AbstractNavigator {
 
     public static supportedRootView = 'Ti.UI.Window';
 
-    public static supportedViews: Set<string> = new Set(['Ti.UI.Window', 'Ti.UI.TabGroup', 'Ti.UI.iOS.NavigationWindow']);
+    public static supportedViews: Set<string> = new Set(['Ti.UI.Window', 'Ti.UI.TabGroup', 'Ti.UI.NavigationWindow']);
 
-    protected yieldNavigationViews: Set<string> = new Set(['Ti.UI.TabGroup', 'Ti.UI.iOS.NavigationWindow']);
+    protected yieldNavigationViews: Set<string> = new Set(['Ti.UI.TabGroup', 'Ti.UI.NavigationWindow']);
 
     /**
      * The Ti.UI.Window that acts as the root window.
@@ -109,11 +109,11 @@ export class WindowNavigator extends AbstractNavigator {
     }
 
     /**
-     * Custom type guard to check if a view is a Ti.UI.iOS.NavigationWindow.
+     * Custom type guard to check if a view is a Ti.UI.NavigationWindow.
      *
      * @param view View to check
      */
-    private isNavigationWindow(view: Titanium.Proxy): view is Titanium.UI.iOS.NavigationWindow {
-        return view.apiName === 'Ti.UI.iOS.NavigationWindow';
+    private isNavigationWindow(view: Titanium.Proxy): view is Titanium.UI.NavigationWindow {
+        return view.apiName === 'Ti.UI.NavigationWindow';
     }
 }
