@@ -1,6 +1,6 @@
 {
   "name": "titanium-navigator",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Enables Angular and Vue.js routing in Titanium",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
