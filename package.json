@@ -37,7 +37,7 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/titanium": "^8.0.0",
+    "@types/titanium": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.1",
