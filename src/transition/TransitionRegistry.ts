@@ -1,3 +1,5 @@
+import { SlideLeftTransition } from './builtins';
+import { TransitionType } from './NavigationTransition';
 import { TransitionConstructor } from './TransitionInterface';
 
 export class TransitionRegistry {
@@ -7,6 +9,8 @@ export class TransitionRegistry {
 
     private constructor() {
         this.transitions = new Map();
+
+        this.loadBuiltIns();
     }
 
     public static getInstance(): TransitionRegistry {
@@ -31,5 +35,9 @@ export class TransitionRegistry {
             throw new Error(`No transition known named "${name}".`);
         }
         return transitionClass;
+    }
+
+    private loadBuiltIns(): void {
+        this.registerTransitionClass(TransitionType.SlideLeft, SlideLeftTransition);
     }
 }
