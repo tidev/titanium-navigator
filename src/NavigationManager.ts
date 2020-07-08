@@ -5,7 +5,7 @@ import { NavigationOptions } from './NavigationOptions';
 import { createNavigator, NavigatorInterface, NavigatorProvider } from './navigators/NavigatorInterface';
 
 /**
- * Marker interface to identify Titanium views can be opened and closed.
+ * Marker interface to identify Titanium views that can be opened and closed.
  */
 export interface OpenableViewInterface extends Titanium.Proxy {
     open(...args: any[]): void;
@@ -17,7 +17,7 @@ export interface OpenableViewInterface extends Titanium.Proxy {
  */
 export interface NavigationManagerConfiguration {
     componentAdapter: ComponentAdapterInterface;
-    navigatorProviders: Set<NavigatorProvider>;
+    navigatorProviders: ReadonlyArray<NavigatorProvider>;
 }
 
 /**
@@ -43,6 +43,11 @@ export class NavigationManager {
     public readonly openableViews: Set<string> = new Set();
 
     /**
+     * Signal dispatcher for when a natively triggered navigation occured.
+     */
+    public nativeBackNavigationSignal = new SignalDispatcher();
+
+    /**
      * Stack of navigators.
      */
     private navigators: NavigatorInterface[] = [];
@@ -61,11 +66,6 @@ export class NavigationManager {
      * Set of providers for every registered navigator.
      */
     private navigatorProviders: Set<NavigatorProvider> = new Set();
-
-    /**
-     * Signal dispatcher for when a natively triggered navigation occured.
-     */
-    private nativeBackNavigationSignal = new SignalDispatcher();
 
     /**
      * Internal Flag indicating that a native back navigation is in progress.
