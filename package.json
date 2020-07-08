@@ -32,16 +32,17 @@
   },
   "homepage": "https://github.com/appcelerator/titanium-navigator#readme",
   "dependencies": {
-    "strongly-typed-events": "^1.6.2",
+    "strongly-typed-events": "^1.6.13",
     "titanium-vdom": "^0.3.0",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/titanium": "^8.0.0",
+    "@types/titanium": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "cpx": "^1.5.0",
     "eslint": "^6.2.1",
     "rimraf": "^3.0.0",
-    "typescript": "^3.5.2"
+    "typescript": "~3.8.0"
   }
 }
