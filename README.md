@@ -1,7 +1,5 @@
 # Titanium Navigator
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/appcelerator/titanium-navigator.svg)](https://greenkeeper.io/)
-
 > Enables Angular and Vue.js routing in Titanium
 
 ## Contributing
