@@ -6,14 +6,14 @@
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "build": "npm run clean && npm run syncd && npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc -p tsconfig.prod.cjs.json",
     "build:esm": "tsc -p tsconfig.prod.esm.json",
     "clean": "rimraf dist",
-    "test": "npm run lint",
     "lint": "eslint ./src --ext=.ts",
-    "coveralls": "karma start karma.unit.config.js | coveralls",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "test": "npm run lint",
+    "syncd": "cpx src/**/*.d.ts dist/cjs && cpx src/**/*.d.ts dist/esm"
   },
   "keywords": [
     "titanium",
