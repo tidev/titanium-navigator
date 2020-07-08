@@ -4,7 +4,7 @@
   "description": "Enables Angular and Vue.js routing in Titanium",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "scripts": {
     "build": "npm run clean && npm run syncd && npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc -p tsconfig.prod.cjs.json",
