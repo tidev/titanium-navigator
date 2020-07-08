@@ -2,6 +2,10 @@ import { RouterStateAdapterInterface } from '../../adapters';
 import { NavigatorProvider } from '../NavigatorInterface';
 import { loadCommonNavigatorProviders } from './common';
 
-export function loadNavigatorProviders(stateAdapterFactory: () => RouterStateAdapterInterface): NavigatorProvider[] {
+export interface StateAdapterFactory {
+    (tabGroup: Titanium.UI.TabGroup): RouterStateAdapterInterface;
+}
+
+export function loadNavigatorProviders(stateAdapterFactory: StateAdapterFactory): NavigatorProvider[] {
     return loadCommonNavigatorProviders(stateAdapterFactory);
 }
