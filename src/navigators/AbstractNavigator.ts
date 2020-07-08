@@ -58,9 +58,16 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     }
 
     /**
-     * Initializes this navigator.
+     * Activates this navigator.
      */
-    public initialize(): void {
+    public activate(): void {
+        // Does nothing by default, override in actual navigator implementation.
+    }
+
+    /**
+     * Deactivates this navigator.
+     */
+    public deactivate(): void {
         // Does nothing by default, override in actual navigator implementation.
     }
 

@@ -127,8 +127,8 @@ export class NavigationManager {
      */
     public createAndOpenRootNavigator(component: any): void {
         const navigator = this.createNavigator(component);
-        navigator.openRootWindow();
         this.pushNavigator(navigator);
+        navigator.openRootWindow();
     }
 
     /**
@@ -204,7 +204,6 @@ export class NavigationManager {
             if (candidateNavigatorProvider.class.canHandle(titaniumView)) {
                 Ti.API.debug(`Creating navigator ${candidateNavigatorProvider.class.name} for component ${componentName}.`);
                 navigator = createNavigator(candidateNavigatorProvider.class, titaniumView, ...candidateNavigatorProvider.deps);
-                navigator.initialize();
                 break;
             }
         }
@@ -236,6 +235,11 @@ export class NavigationManager {
         Ti.API.trace(`NavigationManager - new active navigator: ${this.activeNavigator}`);
     }
 
+    private deactivateNavigator(navigator: NavigatorInterface): void {
+        this.removeNativeNavigationSignalListener()
+        navigator.deactivate()
+    }
+
     /**
      * Pushes a new navigator on the stack and activates it.
      *
@@ -245,7 +249,7 @@ export class NavigationManager {
         Ti.API.trace('NavigationManager.pushNavigator');
 
         if (this.activeNavigator) {
-            this.removeNativeNavigationSignalListener();
+            this.deactivateNavigator(this.activeNavigator);
         }
 
         this.navigators.push(navigator);
@@ -260,8 +264,7 @@ export class NavigationManager {
         }
 
         const poppedNavigator = this.navigators.pop() as NavigatorInterface;
-        this.removeNativeNavigationSignalListener();
-
+        this.deactivateNavigator(poppedNavigator);
         this.activateNavigator(this.navigators[this.navigators.length - 1]);
 
         return poppedNavigator;

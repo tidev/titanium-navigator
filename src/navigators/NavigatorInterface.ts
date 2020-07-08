@@ -16,7 +16,8 @@ export interface NavigatorProvider {
 
 export interface NavigatorInterface {
     nativeNavigationSignal: SignalDispatcher;
-    initialize(): void;
+    activate(): void;
+    deactivate(): void;
     openRootWindow(): void;
     closeRootWindow(): void;
     shouldYieldNavigating(view: Titanium.Proxy): boolean;

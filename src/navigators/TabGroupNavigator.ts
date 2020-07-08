@@ -41,7 +41,8 @@ export class TabGroupNavigator extends AbstractNavigator {
         this.routerStateAdapter = createRouterStateAdapter();
     }
 
-    public initialize(): void {
+    public activate(): void {
+        this.routerStateAdapter.activate();
         this.tabGroup.addEventListener('focus', event => {
             if (event.previousIndex === -1 || !this.tabGroup.activeTab) {
                 return;
@@ -49,6 +50,10 @@ export class TabGroupNavigator extends AbstractNavigator {
 
             this.routerStateAdapter.applySnapshot(this.tabGroup.activeTab as Titanium.UI.Tab);
         });
+    }
+
+    public deactivate(): void {
+        this.routerStateAdapter.deactivate();
     }
 
     public openRootWindow(): void {

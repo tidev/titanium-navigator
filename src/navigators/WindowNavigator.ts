@@ -43,10 +43,6 @@ export class WindowNavigator extends AbstractNavigator {
         this.transitionHandler = new NavigationTransitionHandler();
     }
 
-    public initialize() {
-        // TODO: Can this be removed?
-    }
-
     public openRootWindow(): void {
         this.windows.push(this.rootWindow);
         this.rootWindow.open();

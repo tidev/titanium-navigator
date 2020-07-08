@@ -16,7 +16,11 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
      * The routing snapshot when the tab group is opnened, used as the
      * initial snapshot for each tab.
      */
-    protected initialSnapshot: RouterStateSnapshotInterface | null = null;
+    protected initialSnapshot!: RouterStateSnapshotInterface;
+
+    public abstract activate(): void;
+
+    public abstract deactivate(): void;
 
     /**
      * Updates the current router state snpashot for the given tab.
@@ -40,7 +44,7 @@ export abstract class AbstractRouterStateAdapter implements RouterStateAdapterIn
 
         let storedSnapshot = this.routerSnapshots.get(tab);
         if (!storedSnapshot) {
-            storedSnapshot = this.initialSnapshot!;
+            storedSnapshot = this.initialSnapshot;
             this.routerSnapshots.set(tab, storedSnapshot);
         }
 
