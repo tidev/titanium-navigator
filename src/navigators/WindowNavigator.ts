@@ -52,12 +52,13 @@ export class WindowNavigator extends AbstractNavigator {
         this.rootWindow.close();
     }
 
+    public closeNavigator(): void {
+        this.windows.forEach(w => (w as Ti.UI.Window).close());
+        this.closeRootWindow();
+    }
+
     public open(view: Titanium.Proxy, options: NavigationOptions): void {
         const openWindowOptions: openWindowParams = {};
-
-        if (options.clearHistory) {
-            // TODO: Clear history
-        }
 
         Ti.API.debug(`options: ${JSON.stringify(options)}`);
         Ti.API.debug(`openWindowOptions: ${JSON.stringify(openWindowOptions)}`);
@@ -68,12 +69,23 @@ export class WindowNavigator extends AbstractNavigator {
             Ti.API.debug(`openWindowOptions: ${JSON.stringify(openWindowOptions)}`);
         }
 
-        this.windows.push(view);
-
         if (this.isWindow(view) || this.isNavigationWindow(view)) {
             view.open(openWindowOptions);
         } else if (this.isTabGroup(view)) {
             view.open();
+        }
+
+        if (options.clearHistory) {
+            const prevWindows = this.windows.splice(0, this.windows.length);
+            const closePreviousWindows = (): void => {
+                prevWindows.forEach(w => (w as Ti.UI.Window).close());
+                view.removeEventListener('open', closePreviousWindows);
+            }
+            view.addEventListener('open', closePreviousWindows);
+        }
+
+        if (!this.shouldYieldNavigating(view)) {
+            this.windows.push(view);
         }
     }
 

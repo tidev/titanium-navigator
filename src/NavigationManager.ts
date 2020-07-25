@@ -3,6 +3,7 @@ import { SignalDispatcher } from 'strongly-typed-events';
 import { ComponentAdapterInterface } from './adapters/ComponentAdapterInterface';
 import { NavigationOptions } from './NavigationOptions';
 import { createNavigator, NavigatorInterface, NavigatorProvider } from './navigators/NavigatorInterface';
+import { deviceRuns, TiAppInternal } from './utility';
 
 /**
  * Marker interface to identify Titanium views that can be opened and closed.
@@ -84,6 +85,8 @@ export class NavigationManager {
         this.currentNavigationOptions = this.defaultNavigationOptions;
         this.componentAdapter = config.componentAdapter;
         config.navigatorProviders.forEach(provider => this.registerNavigatorProvider(provider));
+
+        this.applyAndroidLiveViewPatch();
     }
 
     /**
@@ -155,14 +158,18 @@ export class NavigationManager {
             Ti.API.trace(`NavigationManager - ${this.activeNavigator} cannot continue after ${titaniumView.apiName} was opened, yielding to new navigator.`);
             const navigator = this.createNavigator(component);
             this.pushNavigator(navigator);
+
+            if (this.currentNavigationOptions.clearHistory) {
+                Ti.API.debug('NavigationManager - clearHistory set, closing all previous navigators.');
+                const removedNavigators = this.navigators.splice(0, this.navigators.length - 1);
+                removedNavigators.forEach(n => n.closeNavigator());
+            }
         }
 
         // @todo Handle modals -> create new appropriate navigator
     }
 
     public back(): void {
-        Ti.API.trace('NavigationManager.back()');
-
         if (!this.activeNavigator) {
             throw new Error('No active navigator available to handle back navigation request.');
         }
@@ -183,6 +190,31 @@ export class NavigationManager {
     public resetBackNavigationFlags(): void {
         this.nativeBackNavigation = false;
         this.locationBackNavigation = false;
+    }
+
+    /**
+     * Patches live view and navigation signal dispatching behavior on Android.
+     *
+     * On Android the topmost window's `close` event is fired after the App was
+     * reloaded using LiveView AND the new window already fired its `open`
+     * event. This screws up internal router state, so we set s flag to
+     * avoid sending the native back navigation signal in this particular case.
+     */
+    public applyAndroidLiveViewPatch(): void {
+        if (!deviceRuns('android')) {
+            return;
+        }
+
+        const App: TiAppInternal = Ti.App as any;
+        const _restart = App._restart;
+        _restart.__liveViewRestart = false;
+        if (!_restart.__navigatorPatch) {
+            App._restart = (): void => {
+                _restart.__liveViewRestart = true;
+                _restart();
+            }
+            App._restart.__navigatorPatch = true
+        }
     }
 
     /**
@@ -228,9 +260,12 @@ export class NavigationManager {
             }
 
             this._nativeBackNavigation = true;
-
             this.nativeBackNavigationSignal.dispatch();
+            if (this.activeNavigator && !this.activeNavigator.canGoBack() && this.navigators.length > 1) {
+                this.popNavigator();
+            }
         });
+        navigator.activate();
 
         Ti.API.trace(`NavigationManager - new active navigator: ${this.activeNavigator}`);
     }
@@ -257,8 +292,6 @@ export class NavigationManager {
     }
 
     private popNavigator(): NavigatorInterface {
-        Ti.API.trace('NavigationManager.popNavigator');
-
         if (this.navigators.length === 1) {
             throw new Error(`The last navigator in the stack connot be closed.`);
         }

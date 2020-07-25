@@ -1,4 +1,5 @@
 import { NavigationOptions } from '../NavigationOptions';
+import { deviceRuns, TiAppInternal } from '../utility';
 import { AbstractNavigator } from './AbstractNavigator';
 
 /**
@@ -14,7 +15,15 @@ export class NavigationWindowNavigator extends AbstractNavigator {
     public static supportedViews: Set<string> = new Set(['Ti.UI.Window']);
 
     /**
-     * Root window of this navigator which is a iOS NavigationWindow
+     * Event handler for the `close` event of windows in the window stack.
+     *
+     * This is used to track native back navigation and will dispatch the
+     * `nativeNavigationSignal` signal.
+     */
+    public onWindowClose: (event: any) => void;
+
+    /**
+     * Root window of this navigator which is a NavigationWindow
      */
     private rootWindow: Titanium.UI.NavigationWindow;
 
@@ -32,6 +41,24 @@ export class NavigationWindowNavigator extends AbstractNavigator {
         super(navigationWindow);
 
         this.rootWindow = navigationWindow as Titanium.UI.NavigationWindow;
+        this.onWindowClose = (event: any): void => {
+            const App = Ti.App as any as TiAppInternal;
+            if (deviceRuns('android') && App._restart.__liveViewRestart) {
+                App._restart.__liveViewRestart = false;
+                return;
+            }
+            const window = event.source as Titanium.UI.Window;
+            window.removeEventListener('close', this.onWindowClose);
+            this.nativeNavigationSignal.dispatch();
+        }
+    }
+
+    public activate(): void {
+        this.rootWindow.window.addEventListener('close', this.onWindowClose);
+    }
+
+    public deactivate(): void {
+        this.rootWindow.window.removeEventListener('close', this.onWindowClose);
     }
 
     public openRootWindow(): void {
@@ -42,8 +69,14 @@ export class NavigationWindowNavigator extends AbstractNavigator {
         this.rootWindow.close();
     }
 
+    public closeNavigator(): void {
+        this.windows.forEach(w => w.removeEventListener('close', this.onWindowClose));
+        this.windows = [];
+        this.rootWindow.close();
+    }
+
     public open(view: Titanium.Proxy, options: NavigationOptions): void {
-        view.addEventListener('close', this.onWindowClose.bind(this));
+        view.addEventListener('close', this.onWindowClose);
         this.windows.push(view);
         this.rootWindow.openWindow(view as Titanium.UI.Window, { animated: true });
     }
@@ -56,21 +89,5 @@ export class NavigationWindowNavigator extends AbstractNavigator {
         const window = this.windows.pop() as Titanium.UI.Window;
         window.removeEventListener('close', this.onWindowClose);
         this.rootWindow.closeWindow(window, null);
-    }
-
-    /**
-     * Event handler for the "close" event of windows that were opened in the
-     * root navigation window.
-     *
-     * Used to update Angular routing when a native back navigation was
-     * triggered.
-     *
-     * @param event
-     */
-    public onWindowClose(event: any): void {
-        const window = event.source as Titanium.UI.Window;
-        window.removeEventListener('close', this.onWindowClose);
-
-        this.nativeNavigationSignal.dispatch();
     }
 }

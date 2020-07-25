@@ -82,6 +82,12 @@ export abstract class AbstractNavigator implements NavigatorInterface {
     public abstract closeRootWindow(): void;
 
     /**
+     * Closes the complete navigator including all opened windows and the root
+     * window.
+     */
+    public abstract closeNavigator(): void;
+
+    /**
      * Returns wether this navigator should yield his navigating responsibilities
      * to another navigator after opening the specified view.
      *

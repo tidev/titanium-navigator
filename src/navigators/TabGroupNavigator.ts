@@ -1,28 +1,8 @@
 import { RouterStateAdapterInterface } from '../adapters';
 import { NavigationOptions } from '../NavigationOptions';
-import { deviceRuns } from '../utility';
+import { deviceRuns, TiAppInternal } from '../utility';
 import { AbstractNavigator } from './AbstractNavigator';
 import { StateAdapterFactory } from './loader';
-
-/**
- * Flag to show if the App was restarted by LiveView.
- *
- * On Android the topmost window's `close` event is fired after the App was
- * reloaded using LiveView AND the new window already fired its `open`
- * event. This screws up internal router state, so we set this flag to
- * avoid sending the native back navigation signal in this particular case.
- */
-let liveViewRestart = false;
-// Patch internal Ti.App._restart to track LiveView reloads
-const _restart = (Ti.App as any)._restart;
-if (!_restart.__navigatorPatch) {
-    (Ti.App as any)._restart = (): void => {
-        liveViewRestart = true;
-        _restart();
-    }
-    _restart.__navigatorPatch = true
-}
-
 
 /**
  * A navigator for handling navigation inside the Tabs of a TabGroup.
@@ -69,8 +49,9 @@ export class TabGroupNavigator extends AbstractNavigator {
         this.tabGroup = tabGroup as Titanium.UI.TabGroup;
         this.routerStateAdapter = createRouterStateAdapter(this.tabGroup);
         this.onWindowClose = (event: any): void => {
-            if (deviceRuns('android') && liveViewRestart) {
-                liveViewRestart = false;
+            const App = Ti.App as any as TiAppInternal;
+            if (deviceRuns('android') && App._restart.__liveViewRestart) {
+                App._restart.__liveViewRestart = false;
                 return;
             }
             const window = event.source as Titanium.UI.Window;
@@ -82,7 +63,10 @@ export class TabGroupNavigator extends AbstractNavigator {
     public activate(): void {
         this.routerStateAdapter.activate();
         this.tabGroup.addEventListener('focus', event => {
-            if (event.previousIndex === -1 || !this.tabGroup.activeTab) {
+            if (event.previousIndex === -1 ||
+                event.index === event.previousIndex ||
+                !this.tabGroup.activeTab
+            ) {
                 return;
             }
 
@@ -100,6 +84,12 @@ export class TabGroupNavigator extends AbstractNavigator {
 
     public closeRootWindow(): void {
         this.tabGroup.close();
+    }
+
+    public closeNavigator(): void {
+        this.windowStacks.forEach(s => s.forEach(w => w.removeEventListener('close', this.onWindowClose)));
+        this.windowStacks.clear();
+        this.closeRootWindow();
     }
 
     public open(view: Titanium.Proxy, options: NavigationOptions): void {

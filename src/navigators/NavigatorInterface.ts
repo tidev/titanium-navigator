@@ -20,6 +20,7 @@ export interface NavigatorInterface {
     deactivate(): void;
     openRootWindow(): void;
     closeRootWindow(): void;
+    closeNavigator(): void;
     shouldYieldNavigating(view: Titanium.Proxy): boolean;
     canOpen(view: Titanium.Proxy): boolean;
     open(view: Titanium.Proxy, options: NavigationOptions): void;
