@@ -1,6 +1,6 @@
 {
   "name": "titanium-navigator",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Enables Angular and Vue.js routing in Titanium",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/appcelerator/titanium-navigator#readme",
   "dependencies": {
     "strongly-typed-events": "^1.6.13",
-    "titanium-vdom": "^0.3.0",
+    "titanium-vdom": "^0.4.4",
     "tslib": "^1.9.3"
   },
   "devDependencies": {

@@ -1,3 +1,11 @@
+## [0.3.1](https://github.com/appcelerator/titanium-navigator/compare/0.3.0...0.3.1) (2020-07-27)
+
+
+### Features
+
+* partial support for clear history flag ([c9938b5](https://github.com/appcelerator/titanium-navigator/commit/c9938b5cf0c8158fafc95cc50c222e9d6f596404))
+
+
 # [0.3.0](https://github.com/appcelerator/titanium-navigator/compare/0.2.0...0.3.0) (2020-07-08)
 
 
